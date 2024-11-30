@@ -43,7 +43,12 @@ export function CurrencyComBox() {
     if (userCurrency) setSelectedCurrency(userCurrency);
   }, [userSettings.data]);
   const mutation = useMutation({
-    mutationFn: UpdateUserCurrency,
+    mutationFn: async (currency: string) => {
+      const result = await UpdateUserCurrency(currency);
+      // Ensure you return the expected object or throw an error if the result is invalid
+      if (!result) throw new Error("Failed to update currency");
+      return result; // Expecting { userId: string; currency: string }
+    },
     onSuccess: (data: UserSettings) => {
       toast.success("Currency Updated Successfully", { id: "update-currency" });
       setSelectedCurrency(
@@ -51,7 +56,7 @@ export function CurrencyComBox() {
       );
     },
     onError: (e) => {
-      console.error("Error updating currency:", error);
+      console.error("Error updating currency:", e);
       toast.error("Something went wrong", { id: "update-currency" });
     },
   });
