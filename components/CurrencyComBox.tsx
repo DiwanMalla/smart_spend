@@ -23,6 +23,7 @@ import SkeletonWrapper from "./SkeletonWrapper";
 import { UserSettings } from "@prisma/client";
 import { UpdateUserCurrency } from "@/app/wizard/_actions/userSettings";
 import { toast } from "sonner";
+import error from "next/error";
 
 export function CurrencyComBox() {
   const [open, setOpen] = useState(false);
@@ -50,6 +51,7 @@ export function CurrencyComBox() {
       );
     },
     onError: (e) => {
+      console.error("Error updating currency:", error);
       toast.error("Something went wrong", { id: "update-currency" });
     },
   });
