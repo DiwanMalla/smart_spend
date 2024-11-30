@@ -1,4 +1,4 @@
-import CurrencyComBox from "@/components/CurrencyComBox";
+import { CurrencyComBox } from "@/components/CurrencyComBox";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,36 +18,37 @@ const page = async () => {
   if (!user) {
     redirect("/sign-in");
   }
+
   return (
-    <div className="container flex max-w-2xl flex-col items-center justify-between">
-      <div>
-        <h1 className="text-center text-3xl">
+    <div className="container flex max-w-2xl flex-col items-center gap-6 p-4">
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-bold">
           Welcome, <span>{user.firstName} 👋</span>
         </h1>
-        <h2 className="mt-4 text-center text-base">
-          Let &apos;s get started by setting up your currency
+        <h2 className="mt-2 text-lg text-gray-700">
+          Let&apos;s get started by setting up your currency
         </h2>
-        <h3 className="mt-2 text-center text-sm text-muted-foreground">
+        <h3 className="mt-1 text-sm text-muted-foreground">
           You can change these settings at any time
         </h3>
       </div>
-      <Separator />
+      <Separator className="my-4" />
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Currency</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-xl">Currency</CardTitle>
+          <CardDescription className="text-sm text-gray-600">
             Set your default currency for transactions
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-4">
           <CurrencyComBox />
         </CardContent>
       </Card>
-      <Separator />
-      <Button className="w-full" asChild>
+      <Separator className="my-4" />
+      <Button className="w-full h-12 text-lg font-medium" asChild>
         <Link href={"/"}>I&apos;m done! Take me to the dashboard</Link>
       </Button>
-      <div className="mt-8">
+      <div className="mt-10">
         <Logo />
       </div>
     </div>
