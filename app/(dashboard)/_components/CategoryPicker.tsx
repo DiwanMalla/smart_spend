@@ -15,7 +15,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useState } from "react";
 import CreateCategoryDialog from "./CreateCategoryDialog";
-import { Alert } from "@/components/ui/alert";
 
 interface Props {
   type: TransactionType;

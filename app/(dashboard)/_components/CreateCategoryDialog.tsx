@@ -55,7 +55,7 @@ const CreateCategoryDialog = ({ type }: Props) => {
     onSuccess: async (data: Category) => {
       form.reset({ name: "", icon: "", type });
       toast.success(`Category ${data.name} create succesfully 🎉`, {
-        id: "create category",
+        id: "create-category",
       });
       await queryClient.invalidateQueries({
         queryKey: ["categories"],
