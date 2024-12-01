@@ -22,8 +22,9 @@ export async function UpdateUserCurrency(currency: string) {
 
   // Try to find existing user settings
   const existingUserSettings = await prisma.userSettings.findUnique({
-    where: { userId: user.id },
+    where: { userId: "user_2pZjmycouu8mJizeDocaGifuUt3" },
   });
+  console.log(existingUserSettings);
 
   if (!existingUserSettings) {
     // If no user settings are found, create a new record
