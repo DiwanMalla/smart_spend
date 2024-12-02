@@ -40,8 +40,9 @@ import { Category } from "@prisma/client";
 import { toast } from "sonner";
 interface Props {
   type: TransactionType;
+  successCallback: (category: Category) => void;
 }
-const CreateCategoryDialog = ({ type }: Props) => {
+const CreateCategoryDialog = ({ type, successCallback }: Props) => {
   const [open, setOpen] = useState(false);
   const form = useForm<CreateCategorySchemaType>({
     resolver: zodResolver(CreateCategorySchema),
@@ -57,6 +58,7 @@ const CreateCategoryDialog = ({ type }: Props) => {
       toast.success(`Category ${data.name} create succesfully 🎉`, {
         id: "create-category",
       });
+      successCallback(data);
       await queryClient.invalidateQueries({
         queryKey: ["categories"],
       });
@@ -116,9 +118,12 @@ const CreateCategoryDialog = ({ type }: Props) => {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input defaultValue={""} {...field} />
+                    <Input placeholder="Category" {...field} />
                   </FormControl>
-                  <FormDescription>Transaction description </FormDescription>
+                  <FormDescription>
+                    {" "}
+                    This is how your category will appear in the app{" "}
+                  </FormDescription>
                 </FormItem>
               )}
             />{" "}

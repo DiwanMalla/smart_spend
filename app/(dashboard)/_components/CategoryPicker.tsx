@@ -13,8 +13,9 @@ import { Category } from "@prisma/client";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { useQuery } from "@tanstack/react-query";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import CreateCategoryDialog from "./CreateCategoryDialog";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 interface Props {
   type: TransactionType;
@@ -35,6 +36,14 @@ const CategoryPicker = ({ type }: Props) => {
   const selectedCategory = categoriesQuery.data?.find(
     (category: Category) => category.name === value
   );
+
+  const successCallback = useCallback(
+    (category: Category) => {
+      setValue(category.name);
+      setOpen((prev) => !prev);
+    },
+    [setValue, setOpen]
+  );
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -49,6 +58,7 @@ const CategoryPicker = ({ type }: Props) => {
           ) : (
             "Select Category"
           )}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent>
@@ -58,7 +68,7 @@ const CategoryPicker = ({ type }: Props) => {
           }}
         >
           <CommandInput placeholder="Search category..." />
-          <CreateCategoryDialog type={type} />
+          <CreateCategoryDialog type={type} successCallback={successCallback} />
           <CommandEmpty>
             <p>Category not found</p>
             <p className="text-xs text-muted-foreground">
@@ -72,12 +82,17 @@ const CategoryPicker = ({ type }: Props) => {
                   return (
                     <CommandItem
                       key={category.name}
-                      onSelect={(currentValue) => {
-                        setValue(currentValue);
+                      onSelect={() => {
+                        setValue(category.name);
                         setOpen((prev) => !prev);
                       }}
                     >
                       <CategoryRow category={category} />
+                      <Check
+                        className={`mr-2 w-4 h-4 ${
+                          value === category.name ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
                     </CommandItem>
                   );
                 })}
