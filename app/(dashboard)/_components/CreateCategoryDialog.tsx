@@ -38,6 +38,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import CreateCategory from "../_actions/categories";
 import { Category } from "@prisma/client";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
 interface Props {
   type: TransactionType;
   successCallback: (category: Category) => void;
@@ -51,6 +52,7 @@ const CreateCategoryDialog = ({ type, successCallback }: Props) => {
     },
   });
   const queryClient = useQueryClient();
+  const theme = useTheme();
   const { mutate, isPending } = useMutation({
     mutationFn: CreateCategory,
     onSuccess: async (data: Category) => {

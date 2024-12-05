@@ -13,16 +13,22 @@ import { Category } from "@prisma/client";
 import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
 import { useQuery } from "@tanstack/react-query";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CreateCategoryDialog from "./CreateCategoryDialog";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 interface Props {
   type: TransactionType;
+  onChange: (value: string) => void;
 }
-const CategoryPicker = ({ type }: Props) => {
+const CategoryPicker = ({ type, onChange }: Props) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+
+  useEffect(() => {
+    if (!value) return;
+    onChange(value);
+  }, [onChange, value]);
   const categoriesQuery = useQuery({
     queryKey: ["categories", type],
     queryFn: async () => {
