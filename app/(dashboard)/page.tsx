@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import CreateTransactionDialog from "./_components/CreateTransactionDialog";
 import Overview from "./_components/Overview";
+import Hostory from "./_components/Hostory";
 
 const page = async () => {
   const user = await currentUser();
@@ -50,6 +51,7 @@ const page = async () => {
         </div>
       </div>
       <Overview userSettings={userSettings} />
+      <Hostory userSettings={userSettings} />
     </div>
   );
 };

@@ -7,25 +7,45 @@ import { redirect } from "next/navigation";
 export async function GET(request: Request) {
   const user = await currentUser();
   if (!user) {
-    redirect("/sign-in");
+    // Return a response with a redirect
+    return Response.redirect("/sign-in", 302);
   }
+
   const { searchParams } = new URL(request.url);
   const from = searchParams.get("from");
   const to = searchParams.get("to");
 
   const queryParams = OverviewQuerySchema.safeParse({ from, to });
+
   if (!queryParams.success) {
-    return new Error(queryParams.error.message);
+    // Return a JSON response with an error message
+    return new Response(JSON.stringify({ error: queryParams.error.message }), {
+      status: 400, // Bad request
+      headers: { "Content-Type": "application/json" },
+    });
   }
-  const stats = await getCategoriesStats(
-    user.id,
-    queryParams.data.from,
-    queryParams.data.to
-  );
-  return Response.json(stats);
+
+  try {
+    const stats = await getCategoriesStats(
+      user.id,
+      queryParams.data.from,
+      queryParams.data.to
+    );
+    return new Response(JSON.stringify(stats), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    // Return a server error response in case of failure
+    return new Response(
+      JSON.stringify({ error: "An error occurred while fetching stats" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 }
+
 export type getCategoriesStatsResponseType = {
-  type: TransactionType; // Ensure this matches the `TransactionType` enum or string values you use
+  type: TransactionType;
   category: string;
   categoryIcon: string;
   _sum: {
