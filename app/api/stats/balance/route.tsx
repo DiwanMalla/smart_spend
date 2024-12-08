@@ -18,11 +18,19 @@ async function getBalanceStats(userId: string, from: Date, to: Date) {
     },
     _sum: { amount: true },
   });
+
+  // Create a map for faster lookup
+  const totalsMap = totals.reduce((acc, t) => {
+    acc[t.type] = t._sum.amount || 0;
+    return acc;
+  }, {} as Record<string, number>);
+
   return {
-    expense: totals.find((t) => t.type === "expense")?._sum.amount || 0,
-    income: totals.find((t) => t.type === "income")?._sum.amount || 0,
+    expense: totalsMap.expense || 0,
+    income: totalsMap.income || 0,
   };
 }
+
 export async function GET(request: Request) {
   const user = await currentUser();
   if (!user) {
