@@ -4,6 +4,8 @@ import prisma from "@/lib/prisma";
 import {
   CreateCategorySchema,
   CreateCategorySchemaType,
+  DeleteCategorySchema,
+  DeleteCategorySchemaType,
 } from "@/schema/categories";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -45,3 +47,29 @@ const CreateCategory = async (form: CreateCategorySchemaType) => {
 };
 
 export default CreateCategory;
+
+export const DeleteCategory = async (form: DeleteCategorySchemaType) => {
+  // Validate the incoming form data
+  const parseBody = DeleteCategorySchema.safeParse(form);
+  if (!parseBody.success) {
+    // Throw an error with detailed validation issues
+    throw new Error(
+      `Validation Error: ${JSON.stringify(parseBody.error.issues)}`
+    );
+  }
+
+  // Ensure the user is authenticated
+  const user = await currentUser();
+  if (!user) {
+    redirect("/sign-in");
+  }
+  return await prisma.category.delete({
+    where: {
+      name_userId_type: {
+        userId: user.id,
+        name: parseBody.data.name,
+        type: parseBody.data.type,
+      },
+    },
+  });
+};
