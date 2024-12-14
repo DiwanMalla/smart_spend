@@ -1,5 +1,4 @@
 "use client";
-
 import { useCallback, useEffect, useState } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,6 @@ import SkeletonWrapper from "./SkeletonWrapper";
 import { UserSettings } from "@prisma/client";
 import { UpdateUserCurrency } from "@/app/wizard/_actions/userSettings";
 import { toast } from "sonner";
-import error from "next/error";
 
 export function CurrencyComBox() {
   const [open, setOpen] = useState(false);
@@ -31,23 +29,29 @@ export function CurrencyComBox() {
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(
     null
   );
+
+  // Fetch user settings from the server
   const userSettings = useQuery<UserSettings>({
     queryKey: ["userSettings"],
-    queryFn: () => fetch("/api/user-settings").then((res) => res.json()),
+    queryFn: () => fetch("/api/user-setting").then((res) => res.json()),
   });
+
+  // Set the selected currency when user settings data is available
   useEffect(() => {
     if (!userSettings.data) return;
     const userCurrency = Currencies.find(
       (currency) => currency.value === userSettings.data.currency
     );
-    if (userCurrency) setSelectedCurrency(userCurrency);
+    if (userCurrency) {
+      setSelectedCurrency(userCurrency);
+    }
   }, [userSettings.data]);
+
   const mutation = useMutation({
     mutationFn: async (currency: string) => {
       const result = await UpdateUserCurrency(currency);
-      // Ensure you return the expected object or throw an error if the result is invalid
       if (!result) throw new Error("Failed to update currency");
-      return result; // Expecting { userId: string; currency: string }
+      return result;
     },
     onSuccess: (data: UserSettings) => {
       toast.success("Currency Updated Successfully", { id: "update-currency" });
@@ -60,6 +64,7 @@ export function CurrencyComBox() {
       toast.error("Something went wrong", { id: "update-currency" });
     },
   });
+
   const selectOption = useCallback(
     (currency: Currency | null) => {
       if (!currency) {
@@ -73,6 +78,7 @@ export function CurrencyComBox() {
     },
     [mutation]
   );
+
   if (isDesktop) {
     return (
       <SkeletonWrapper isLoading={userSettings.isFetching}>
