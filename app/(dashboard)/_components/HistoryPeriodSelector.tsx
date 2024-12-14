@@ -1,5 +1,4 @@
-"use client";
-
+import { useState, useEffect } from "react";
 import { GetHistoryPeriodsResponseType } from "@/app/api/history-periods/route";
 import SkeletonWrapper from "@/components/SkeletonWrapper";
 import {
@@ -11,7 +10,6 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Period, TimeFrame } from "@/lib/types";
-
 import { useQuery } from "@tanstack/react-query";
 
 interface Props {
@@ -20,6 +18,7 @@ interface Props {
   timeframe: TimeFrame;
   setTimeframe: (timeframe: TimeFrame) => void;
 }
+
 const HistoryPeriodSelector = ({
   period,
   setPeriod,
@@ -30,9 +29,19 @@ const HistoryPeriodSelector = ({
     queryKey: ["overview", "history", "periods"],
     queryFn: () => fetch(`/api/history-periods`).then((res) => res.json()),
   });
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    // Ensure this code runs only on the client
+    setIsClient(true);
+  }, []);
+
+  if (!isClient || historyPeriods.isLoading) return null; // Prevent rendering before client-side hydration and while loading
+
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <SkeletonWrapper isLoading={historyPeriods.isLoading} fullWidth={false}>
+      <SkeletonWrapper isLoading={historyPeriods.isFetching} fullWidth={false}>
         <Tabs
           value={timeframe}
           onValueChange={(value) => setTimeframe(value as TimeFrame)}
@@ -54,7 +63,7 @@ const HistoryPeriodSelector = ({
             years={historyPeriods.data || []}
           />
         </SkeletonWrapper>
-        {timeframe == "month" && (
+        {timeframe === "month" && (
           <SkeletonWrapper
             isLoading={historyPeriods.isFetching}
             fullWidth={false}
@@ -68,6 +77,7 @@ const HistoryPeriodSelector = ({
 };
 
 export default HistoryPeriodSelector;
+
 const YearSelector = ({
   period,
   setPeriod,
@@ -84,7 +94,7 @@ const YearSelector = ({
     }}
   >
     <SelectTrigger className="w-[180px]">
-      <SelectValue />{" "}
+      <SelectValue />
     </SelectTrigger>
     <SelectContent>
       {years && years.length > 0 ? (
@@ -101,6 +111,7 @@ const YearSelector = ({
     </SelectContent>
   </Select>
 );
+
 const MonthSelector = ({
   period,
   setPeriod,
@@ -119,6 +130,7 @@ const MonthSelector = ({
     </SelectTrigger>
     <SelectContent>
       {Array.from({ length: 12 }, (_, i) => i).map((month) => {
+        // Correct the month indexing by adding 1 to the month value
         const monthStr = new Date(period.year, month).toLocaleString(
           "default",
           {
@@ -126,7 +138,7 @@ const MonthSelector = ({
           }
         );
         return (
-          <SelectItem key={month} value={(month + 1).toString()}>
+          <SelectItem key={month} value={month.toString()}>
             {monthStr}
           </SelectItem>
         );

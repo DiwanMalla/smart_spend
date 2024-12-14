@@ -22,7 +22,7 @@ export async function UpdateUserCurrency(currency: string) {
 
   // Try to find existing user settings
   const existingUserSettings = await prisma.userSettings.findUnique({
-    where: { userId: "user_2pZjmycouu8mJizeDocaGifuUt3" },
+    where: { userId: user.id },
   });
   console.log(existingUserSettings);
 

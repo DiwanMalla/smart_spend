@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -157,7 +158,6 @@ const History = ({ userSettings }: { userSettings: UserSettings }) => {
           </SkeletonWrapper>
         </CardContent>
       </Card>
-      History{timeframe}
     </div>
   );
 };
@@ -211,7 +211,7 @@ function TooltipRow({
     (value: number) => {
       return formatter.format(value);
     },
-    [formatter]
+    [formatter] // Dependency array, re-runs only if `formatter` changes
   );
   return (
     <div className="flex items-center gap-2">
